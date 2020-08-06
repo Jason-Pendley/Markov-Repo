@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
@@ -15,13 +16,15 @@ namespace markovTest
         {
             return a + " " + b;
         }
-        static string Markov(string filePath, int keySize, int outputSize)
+        static string Markov( int keySize, int outputSize)
         {
             // Rules to make sure text is not to big
             if (keySize < 1) throw new ArgumentException("Key size cannot be less than 1!");
             string body;
-            using (StreamReader sr = new StreamReader(filePath)){
-                body = sr.ReadToEnd();
+            WebClient web = new WebClient();
+            System.IO.Stream stream = web.OpenRead("https://en.wikipedia.org/wiki/Diogenes");
+            using (System.IO.StreamReader read = new System.IO.StreamReader(stream)){
+                body = read.ReadToEnd();
             }
             var words = body.Split();
             if(outputSize < keySize || words.Length < outputSize)
@@ -87,7 +90,7 @@ namespace markovTest
         static void Main(string[] args)
         {
             //display the words from the text doc
-            WriteLine(Markov(@"C:\Temp\Test\chain.txt", 3, 100));
+            WriteLine(Markov( 3, 100));
             ReadKey();
         }
     }
